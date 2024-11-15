@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Professional Details{% endblock %}
+
+{% block content %}
+<h2 class="m-3">Professional Details</h2>
+<div class="d-flex justify-content-center">
+    <table class="table table-bordered table-primary w-auto align-middle">
+        <tr>
+            <th>ID</th>
+            <td>{{ user.id }}</td>
+        </tr>
+        <tr>
+            <th>Username</th>
+            <td>{{ user.username }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ user.status }}</td>
+        </tr>
+        <tr>
+            <th>Role</th>
+            <td>{{ user.role }}</td>
+        </tr>
+        <tr>
+            <th>Experience (Years)</th>
+            <td>{{ user.experience }}</td>
+        </tr>
+        <tr>
+            <th>Service Offered</th>
+            <td>{{ service.name }}</td>
+        </tr>
+        <tr>
+            <th>Address</th>
+            <td>{{ user.address }}</td>
+        </tr>
+        <tr>
+            <th>Pincode</th>
+            <td>{{ user.pincode }}</td>
+        </tr>
+        <tr>
+            <th>Contact No</th>
+            <td>{{ user.contact_number }}</td>
+        </tr>
+        <tr>
+            <th>Profile Created On</th>
+            <td>{{ user.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+        </tr>
+    </table>
+</div>
+<a href="{{ url_for('admin_home') }}" class="btn btn-secondary">Back</a>
+{% endblock %}

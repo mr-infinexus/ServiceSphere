@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&display=swap');
+
+:root {
+    --color-body: #e9edf4;
+    --color-heading: #e9edf4;
+    --color-base: #2A4B8C;
+    --color-base2: #141469;
+    --color-brand: #80D2F2;
+    --color-brand2: #724EBE;
+    --font-base: "Commissioner";
+}
+
+html,
+body {
+    background: linear-gradient(45deg, var(--color-brand) 0%, var(--color-base) 50%, var(--color-brand2) 100%);
+    font-family: var(--font-base), sans-serif;
+    line-height: 1.4;
+    font-size: 1rem;
+}
+
+@media (min-width: 992px) {
+    body {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 720px) {
+    body {
+        font-size: 0.88rem;
+    }
+}
+
+.container {
+    margin-top: 10px;
+    text-align: center;
+    height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--color-heading);
+    font-weight: 800;
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-brand);
+    transition: all 0.4s ease;
+}
+
+a:hover {
+    color: var(--color-base2);
+    text-decoration: underline;
+    text-shadow: 0px 0px 10px var(--color-body);
+}
+
+.img-logo {
+    width: 200px;
+    height: 200px;
+    filter: drop-shadow(1px 4px 4px rgba(0, 0, 0, 0.8));
+}
+
+label {
+    font-weight: 600;
+    color: var(--color-body);
+}
+
+/* BTN */
+.btn {
+    padding: 12px 28px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ALERT */
+.alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: auto;
+    z-index: 1050;
+    border-radius: 5px;
+}
+
+.alert-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}

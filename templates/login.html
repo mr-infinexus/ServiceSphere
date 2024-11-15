@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h1 class="mt-0 m-3">Login Page</h1>
+<hr class="border"><br>
+<div class="card-body">
+    <div class="form-group">
+        <form method="POST" action="" class="form">
+            {{ form.hidden_tag() }}
+            <div class="col-md-12">
+                <label for="username">Username : </label>
+                {{ form.username }}<br><br>
+            </div>
+            <div class="col-md-12">
+                <label for="password">Password : </label>
+                {{ form.password }}<br><br>
+            </div>
+            <div class="text-center mt-2">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+    </div>
+    <br>
+    <h5>Don't have an account? Register now !</h5>
+    <a href="{{ url_for('register_customer') }}">Register As Customer</a><br>
+    <a href="{{ url_for('register_professional') }}">Register As Professional</a>
+</div>
+{% endblock %}

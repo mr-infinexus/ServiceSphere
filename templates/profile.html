@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<h2 class="m-4">Welcome to your profile, @{{ current_user.username }} !</h2>
+<div class="d-flex align-items-center justify-content-center">
+    <div class="card w-50 bg-primary-subtle text-primary-emphasis">
+        <div class="card-body">
+            <h5 class="card-title">User Information</h5>
+            <hr>
+            <p><b>Full Name : </b> {{ current_user.fullname }}</p>
+            <p><b>Address : </b> {{ current_user.address }}</p>
+            <p><b>Pincode : </b> {{ current_user.pincode }}</p>
+            <p><b>Contact Number : </b> {{ current_user.contact_number }}</p>
+        </div>
+    </div>
+</div>
+<div class="text-center mt-4">
+    <a href="{{ url_for('edit_profile_details') }}" class="btn btn-primary mx-2 px-3">Edit Profile</a>
+</div>
+{% endblock %}

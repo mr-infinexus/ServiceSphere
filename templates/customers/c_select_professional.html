@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<h1 class="m-3">List of Professionals</h1>
+<table class="table table-bordered table-primary align-middle">
+    <thead>
+        <tr>
+            <th>Fullname</th>
+            <th>Service Name</th>
+            <th>Address</th>
+            <th>Pincode</th>
+            <th>Contact No</th>
+            <th>Rating</th>
+            <th>Experience</th>
+            <th>Book</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for professional in professionals %}
+        <tr>
+            <td>{{ professional.fullname }}</td>
+            <td>{{ service.name }}</td>
+            <td>{{ professional.address }}</td>
+            <td>{{ professional.pincode }}</td>
+            <td>{{ professional.contact_number }}</td>
+            <td>{{ average_ratings_dict.get(professional.id, 'N/A') }} out of 5</td>
+            <td>{{ professional.experience or 'N/A' }} Years</td>
+            <td>
+                <form
+                    action="{{ url_for('book_service', service_id=professional.service_type, professional_id=professional.id) }}"
+                    method="post" onsubmit="return confirm('Are you sure you want to book this service?');">
+                    <button type="submit" class="btn btn-success mx-2 px-2">Book</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" class="text-center">No professionals found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div>{{ ratings }}</div>
+{% endblock %}

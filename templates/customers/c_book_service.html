@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<h2 class="m-3">Book a Service</h2>
+<hr class="border">
+<form method="POST" action="{{ url_for('book_service', service_id=service_id, professional_id=professional_id) }}">
+    {{ form.hidden_tag() }}
+    <div class="col-md-12">
+        {{ form.task.label }}
+        {{ form.task() }}<br><br>
+    </div>
+    <div class="text-center mt-4">
+        {{ form.submit(class_="btn btn-success") }}
+    </div>
+</form>
+{% endblock %}
