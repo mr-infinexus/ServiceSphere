@@ -291,10 +291,12 @@ def delete_user(user_id):
 @login_required
 @role_required("admin")
 def admin_summary():
-    ratings_data = Review.query.group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
+    ratings_data = Review.query.group_by(Review.rating).with_entities(
+        Review.rating, db.func.count()).all()
     rating_counts = dict(ratings_data)
     service_requests = ServiceRequest.query.all()
-    service_counts = {"Requested": 0, "Accepted": 0, "Rejected": 0, "Closed": 0}
+    service_counts = {"Requested": 0,
+                      "Accepted": 0, "Rejected": 0, "Closed": 0}
     for request in service_requests:
         if request.service_status == "requested":
             service_counts["Requested"] += 1
@@ -404,10 +406,12 @@ def service_remarks(service_id):
 @login_required
 @role_required("customer")
 def customer_summary():
-    ratings_data = Review.query.group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
+    ratings_data = Review.query.group_by(Review.rating).with_entities(
+        Review.rating, db.func.count()).all()
     rating_counts = dict(ratings_data)
     service_requests = ServiceRequest.query.all()
-    service_counts = {"Requested": 0, "Accepted": 0, "Rejected": 0, "Closed": 0}
+    service_counts = {"Requested": 0,
+                      "Accepted": 0, "Rejected": 0, "Closed": 0}
     for request in service_requests:
         if request.service_status == "requested":
             service_counts["Requested"] += 1
@@ -497,10 +501,12 @@ def reject_request(request_id):
 @login_required
 @role_required("professional")
 def professional_summary():
-    ratings_data = Review.query.group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
+    ratings_data = Review.query.group_by(Review.rating).with_entities(
+        Review.rating, db.func.count()).all()
     rating_counts = dict(ratings_data)
     service_requests = ServiceRequest.query.all()
-    service_counts = {"Requested": 0, "Accepted": 0, "Rejected": 0, "Closed": 0}
+    service_counts = {"Requested": 0,
+                      "Accepted": 0, "Rejected": 0, "Closed": 0}
     for request in service_requests:
         if request.service_status == "requested":
             service_counts["Requested"] += 1

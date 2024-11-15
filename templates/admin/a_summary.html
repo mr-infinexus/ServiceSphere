@@ -36,7 +36,8 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Data from Flask
-    const ratingCounts = {{ rating_counts | tojson }};
+        const ratingCounts = {{ rating_counts | tojson
+    }};
     const serviceCounts = {{ service_counts | tojson }};
 
     // Customer Ratings Chart (Pie)
