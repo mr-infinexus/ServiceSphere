@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Summary{% endblock %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<h2 class="m-3">Summary</h2>
+<hr class="border">
+<div class="row g-4 justify-content-center">
+    <!-- Customer Ratings Chart -->
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white text-center">
+                <h5>Overall Customer Ratings</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="ratingChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Requests Summary Chart -->
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white text-center">
+                <h5>Service Requests Summary</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="serviceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Data from Flask
+    const ratingCounts = {{ rating_counts | tojson }};
+    const serviceCounts = {{ service_counts | tojson }};
+
+    // Customer Ratings Chart (Pie)
+    const ratingLabels = Object.keys(ratingCounts);
+    const ratingData = Object.values(ratingCounts);
+    const ratingColors = ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"];
+
+    const ratingCtx = document.getElementById('ratingChart').getContext('2d');
+    new Chart(ratingCtx, {
+        type: 'pie',
+        data: {
+            labels: ratingLabels,
+            datasets: [{
+                label: 'Customer Ratings',
+                data: ratingData,
+                backgroundColor: ratingColors,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                },
+                title: {
+                    display: true,
+                    text: 'Overall Customer Ratings'
+                }
+            }
+        }
+    });
+
+    // Service Requests Summary Chart (Bar)
+    const serviceLabels = Object.keys(serviceCounts);
+    const serviceData = Object.values(serviceCounts);
+    const serviceColors = ["#007BFF", "#FF5733", "#C70039", "#900C3F", "#581845"]; // Bar colors
+
+    const serviceCtx = document.getElementById('serviceChart').getContext('2d');
+    new Chart(serviceCtx, {
+        type: 'bar',
+        data: {
+            labels: serviceLabels,
+            datasets: [{
+                label: 'Service Requests',
+                data: serviceData,
+                backgroundColor: serviceColors,
+                borderColor: "#333333",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true
+                },
+                title: {
+                    display: true,
+                    text: 'Service Requests Summary'
+                }
+            }
+        }
+    });
+    });
+</script>
+{% endblock %}

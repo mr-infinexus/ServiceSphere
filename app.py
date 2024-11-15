@@ -173,7 +173,7 @@ def admin_home():
     requests = ServiceRequest.query.all()
     avg_ratings = Review.query.with_entities(Review.professional_id, func.avg(
         Review.rating)).group_by(Review.professional_id).all()
-    average_ratings_dict = {}
+    average_ratings_dict = dict()
     for result in avg_ratings:
         professional_id, avg_rating = result[0], result[1]
         average_ratings_dict[professional_id] = avg_rating
@@ -287,6 +287,26 @@ def delete_user(user_id):
     return redirect(url_for("admin_home"))
 
 
+@app.route('/admin/summary')
+@login_required
+@role_required("admin")
+def admin_summary():
+    ratings_data = Review.query.group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
+    rating_counts = dict(ratings_data)
+    service_requests = ServiceRequest.query.all()
+    service_counts = {"Requested": 0, "Accepted": 0, "Rejected": 0, "Closed": 0}
+    for request in service_requests:
+        if request.service_status == "requested":
+            service_counts["Requested"] += 1
+        elif request.service_status == "accepted":
+            service_counts["Accepted"] += 1
+        elif request.service_status == "rejected":
+            service_counts["Rejected"] += 1
+        elif request.service_status == "closed":
+            service_counts["Closed"] += 1
+    return render_template('admin/a_summary.html', rating_counts=rating_counts, service_counts=service_counts)
+
+
 # --------------------------------------customer-------------------------------------
 
 
@@ -320,7 +340,7 @@ def select_professional(service_id):
     service = Service.query.get(service_id)
     avg_ratings = Review.query.with_entities(Review.professional_id, func.avg(
         Review.rating)).group_by(Review.professional_id).all()
-    average_ratings_dict = {}
+    average_ratings_dict = dict()
     for result in avg_ratings:
         professional_id, avg_rating = result[0], result[1]
         average_ratings_dict[professional_id] = avg_rating
@@ -380,6 +400,26 @@ def service_remarks(service_id):
     return render_template("customers/c_remarks.html", form=form, service_id=service_id)
 
 
+@app.route('/customer/summary')
+@login_required
+@role_required("customer")
+def customer_summary():
+    ratings_data = Review.query.group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
+    rating_counts = dict(ratings_data)
+    service_requests = ServiceRequest.query.all()
+    service_counts = {"Requested": 0, "Accepted": 0, "Rejected": 0, "Closed": 0}
+    for request in service_requests:
+        if request.service_status == "requested":
+            service_counts["Requested"] += 1
+        elif request.service_status == "accepted":
+            service_counts["Accepted"] += 1
+        elif request.service_status == "rejected":
+            service_counts["Rejected"] += 1
+        elif request.service_status == "closed":
+            service_counts["Closed"] += 1
+    return render_template('customer/c_summary.html', rating_counts=rating_counts, service_counts=service_counts)
+
+
 # -------------------------------professional-------------------------------
 
 
@@ -390,20 +430,23 @@ def professional_home():
     today_services = db.session.query(ServiceRequest.id,
                                       ServiceRequest.service_status,
                                       ServiceRequest.task,
-                                      User.fullname.label('customer_fullname'),
-                                      User.address.label('customer_address'),
-                                      User.pincode.label('customer_pincode'),
-                                      User.contact_number.label('customer_contact_number')
+                                      User.fullname.label("customer_fullname"),
+                                      User.address.label("customer_address"),
+                                      User.pincode.label("customer_pincode"),
+                                      User.contact_number.label(
+                                          "customer_contact_number")
                                       ).join(User, User.id == ServiceRequest.customer_id).filter(
-                                            and_(ServiceRequest.professional_id == current_user.id,
-                                                 ServiceRequest.service_status == "requested")).all()
+        and_(ServiceRequest.professional_id == current_user.id,
+             ServiceRequest.service_status == "requested")).all()
     ongoing_services = db.session.query(ServiceRequest.id,
                                         ServiceRequest.service_status,
                                         ServiceRequest.task,
-                                        User.fullname.label('customer_fullname'),
-                                        User.address.label('customer_address'),
-                                        User.pincode.label('customer_pincode'),
-                                        User.contact_number.label('customer_contact_number')
+                                        User.fullname.label(
+                                            "customer_fullname"),
+                                        User.address.label("customer_address"),
+                                        User.pincode.label("customer_pincode"),
+                                        User.contact_number.label(
+                                            "customer_contact_number")
                                         ).join(User, User.id == ServiceRequest.customer_id).filter(
                                             and_(ServiceRequest.professional_id == current_user.id,
                                                  ServiceRequest.service_status == "accepted")).all()
@@ -411,11 +454,11 @@ def professional_home():
                                        ServiceRequest.service_status,
                                        ServiceRequest.task,
                                        User.fullname.label(
-                                           'customer_fullname'),
-                                       User.address.label('customer_address'),
-                                       User.pincode.label('customer_pincode'),
+                                           "customer_fullname"),
+                                       User.address.label("customer_address"),
+                                       User.pincode.label("customer_pincode"),
                                        User.contact_number.label(
-                                           'customer_contact_number')
+                                           "customer_contact_number")
                                        ).join(User, User.id == ServiceRequest.customer_id).filter(
                                            and_(or_(ServiceRequest.service_status == "rejected", ServiceRequest.service_status == "closed"),
                                                 ServiceRequest.professional_id == current_user.id)).all()
@@ -427,13 +470,13 @@ def professional_home():
 @role_required("professional")
 def accept_request(request_id):
     request = ServiceRequest.query.get_or_404(request_id)
-    if request.service_status != 'requested':
+    if request.service_status != "requested":
         flash("This request is not in a pending state.", "info")
-        return redirect(url_for('professional_home'))
-    request.service_status = 'accepted'
+        return redirect(url_for("professional_home"))
+    request.service_status = "accepted"
     db.session.commit()
     flash("Request accepted successfully.", "success")
-    return redirect(url_for('professional_home'))
+    return redirect(url_for("professional_home"))
 
 
 @app.route("/professional/reject_request/<int:request_id>", methods=["POST"])
@@ -441,13 +484,33 @@ def accept_request(request_id):
 @role_required("professional")
 def reject_request(request_id):
     request = ServiceRequest.query.get_or_404(request_id)
-    if request.service_status != 'requested':
+    if request.service_status != "requested":
         flash("This request is not in a pending state.", "info")
-        return redirect(url_for('professional_home'))    
-    request.service_status = 'rejected'
+        return redirect(url_for("professional_home"))
+    request.service_status = "rejected"
     db.session.commit()
     flash("Request rejected successfully.", "success")
-    return redirect(url_for('professional_home'))
+    return redirect(url_for("professional_home"))
+
+
+@app.route('/professional/summary')
+@login_required
+@role_required("professional")
+def professional_summary():
+    ratings_data = Review.query.group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
+    rating_counts = dict(ratings_data)
+    service_requests = ServiceRequest.query.all()
+    service_counts = {"Requested": 0, "Accepted": 0, "Rejected": 0, "Closed": 0}
+    for request in service_requests:
+        if request.service_status == "requested":
+            service_counts["Requested"] += 1
+        elif request.service_status == "accepted":
+            service_counts["Accepted"] += 1
+        elif request.service_status == "rejected":
+            service_counts["Rejected"] += 1
+        elif request.service_status == "closed":
+            service_counts["Closed"] += 1
+    return render_template('professionals/p_summary.html', rating_counts=rating_counts, service_counts=service_counts)
 
 
 if __name__ == "__main__":

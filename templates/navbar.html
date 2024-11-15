@@ -11,13 +11,9 @@
                     <a class="nav-link active" aria-current="page" href="{{ url_for(current_user.role + '_home') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for(current_user.role + '_home') }}">Summary</a>
+                    <a class="nav-link" href="{{ url_for(current_user.role + '_summary') }}">Summary</a>
                 </li>
             </ul>
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-dark mx-2 px-2" type="submit">Search</button>
-            </form>
             <ul class="navbar-nav ml-auto mx-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="btn btn-info mx-2 px-2" href="{{ url_for('profile_details') }}">Profile</a>
