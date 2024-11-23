@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 import application.init_db
 from application.models import User, Service, ServiceRequest, Review
-from application.validations import LoginForm, CustomerRegistrationForm, ProfessionalRegistrationForm, ServiceForm, BookServiceForm, RemarksForm, ProfileForm, EditProfileForm
+from application.validations import LoginForm, CustomerRegistrationForm, ProfessionalRegistrationForm, EditServiceForm, BookServiceForm, RemarksForm, EditProfileForm
 
 
 login_manager = LoginManager()
@@ -113,8 +113,7 @@ def register_professional():
 @app.route("/profile")
 @login_required
 def profile_details():
-    form = ProfileForm(obj=current_user)
-    return render_template("profile.html", form=form)
+    return render_template("profile.html")
 
 
 @app.route("/profile/edit", methods=["GET", "POST"])
@@ -145,7 +144,6 @@ def role_required(role):
         @wraps(func)
         def wrapper(*args, **kwargs):
             if current_user.role != role:
-                # Redirect to their own role"s home page
                 flash(f"You are not supposed to be there, {
                       current_user.username}!", "danger")
                 if current_user.role == "admin":
@@ -175,7 +173,7 @@ def admin_home():
         Review.rating)).group_by(Review.professional_id).all()
     average_ratings_dict = dict()
     for result in avg_ratings:
-        professional_id, avg_rating = result[0], result[1]
+        professional_id, avg_rating = result[0], round(result[1], 1)
         average_ratings_dict[professional_id] = avg_rating
     for service_request in requests:
         professional_name = None
@@ -190,7 +188,7 @@ def admin_home():
 @login_required
 @role_required("admin")
 def add_service():
-    form = ServiceForm()
+    form = EditServiceForm()
     if form.validate_on_submit():
         new_service = Service(
             name=form.name.data,
@@ -202,7 +200,7 @@ def add_service():
         db.session.commit()
         flash("Service added successfully!", "success")
         return redirect(url_for("admin_home"))
-    return render_template("admin/a_add_service.html", form=form)
+    return render_template("admin/a_edit_service.html", form=form, title_name="Add New")
 
 
 @app.route("/admin/service/<int:service_id>/edit", methods=["POST"])
@@ -210,7 +208,7 @@ def add_service():
 @role_required("admin")
 def edit_service(service_id):
     service = Service.query.get_or_404(service_id)
-    form = ServiceForm(obj=service)
+    form = EditServiceForm(obj=service)
     if form.validate_on_submit():
         service.name = form.name.data
         service.price = form.price.data
@@ -219,7 +217,7 @@ def edit_service(service_id):
         db.session.commit()
         flash("Service updated successfully!", "success")
         return redirect(url_for("admin_home"))
-    return render_template("admin/a_edit_service.html", form=form, service=service)
+    return render_template("admin/a_edit_service.html", form=form, service=service, title_name="Edit")
 
 
 @app.route("/admin/service/<int:service_id>/delete", methods=["POST"])
@@ -287,7 +285,7 @@ def delete_user(user_id):
     return redirect(url_for("admin_home"))
 
 
-@app.route('/admin/summary')
+@app.route("/admin/summary")
 @login_required
 @role_required("admin")
 def admin_summary():
@@ -306,7 +304,7 @@ def admin_summary():
             service_counts["Rejected"] += 1
         elif request.service_status == "closed":
             service_counts["Closed"] += 1
-    return render_template('admin/a_summary.html', rating_counts=rating_counts, service_counts=service_counts)
+    return render_template("admin/a_summary.html", rating_counts=rating_counts, service_counts=service_counts)
 
 
 # --------------------------------------customer-------------------------------------
@@ -344,7 +342,7 @@ def select_professional(service_id):
         Review.rating)).group_by(Review.professional_id).all()
     average_ratings_dict = dict()
     for result in avg_ratings:
-        professional_id, avg_rating = result[0], result[1]
+        professional_id, avg_rating = result[0], round(result[1], 1)
         average_ratings_dict[professional_id] = avg_rating
     return render_template("customers/c_select_professional.html", professionals=professionals, service=service, average_ratings_dict=average_ratings_dict)
 
@@ -402,7 +400,7 @@ def service_remarks(service_id):
     return render_template("customers/c_remarks.html", form=form, service_id=service_id)
 
 
-@app.route('/customer/summary')
+@app.route("/customer/summary")
 @login_required
 @role_required("customer")
 def customer_summary():
@@ -421,7 +419,7 @@ def customer_summary():
             service_counts["Rejected"] += 1
         elif request.service_status == "closed":
             service_counts["Closed"] += 1
-    return render_template('customer/c_summary.html', rating_counts=rating_counts, service_counts=service_counts)
+    return render_template("customers/c_summary.html", rating_counts=rating_counts, service_counts=service_counts)
 
 
 # -------------------------------professional-------------------------------
@@ -440,8 +438,8 @@ def professional_home():
                                       User.contact_number.label(
                                           "customer_contact_number")
                                       ).join(User, User.id == ServiceRequest.customer_id).filter(
-        and_(ServiceRequest.professional_id == current_user.id,
-             ServiceRequest.service_status == "requested")).all()
+                                          and_(ServiceRequest.professional_id == current_user.id,
+                                               ServiceRequest.service_status == "requested")).all()
     ongoing_services = db.session.query(ServiceRequest.id,
                                         ServiceRequest.service_status,
                                         ServiceRequest.task,
@@ -497,7 +495,7 @@ def reject_request(request_id):
     return redirect(url_for("professional_home"))
 
 
-@app.route('/professional/summary')
+@app.route("/professional/summary")
 @login_required
 @role_required("professional")
 def professional_summary():
@@ -516,7 +514,7 @@ def professional_summary():
             service_counts["Rejected"] += 1
         elif request.service_status == "closed":
             service_counts["Closed"] += 1
-    return render_template('professionals/p_summary.html', rating_counts=rating_counts, service_counts=service_counts)
+    return render_template("professionals/p_summary.html", rating_counts=rating_counts, service_counts=service_counts)
 
 
 if __name__ == "__main__":

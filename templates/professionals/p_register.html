@@ -5,42 +5,44 @@
 {% block content %}
 <h1 class="mt-0 m-3">Register as Professional</h1>
 <hr class="border"><br>
-<form method="POST" class="row g-6">
-    {{ form.hidden_tag() }}
-    <div class="col-md-12">
-        <label for="username">Username : </label>
-        {{ form.username() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        <label for="password">Password : </label>
-        {{ form.password() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        <label for="fullname">Full Name : </label>
-        {{ form.fullname() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        <label for="service_name">Service Name : </label>
-        {{ form.service_type() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        <label for="experience">Years of Experience : </label>
-        {{ form.experience() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        <label for="address">Address : </label>
-        {{ form.address() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        <label for="pincode">Pincode : </label>
-        {{ form.pincode() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        <label for="contact_number">Contact No : </label>
-        {{ form.contact_number() }}<br><br>
-    </div>
-    <div class="text-center mt-2">
-        <button type="submit" class="btn btn-success">Register</button>
+<form method="POST">
+    <div class="row d-flex flex-column align-items-center">
+        {{ form.hidden_tag() }}
+        <div class="col-md-6">
+            {{ form.username.label(class="form-label me-2") }}
+            {{ form.username(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.password.label(class="form-label me-2") }}
+            {{ form.password(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.fullname.label(class="form-label me-2") }}
+            {{ form.fullname(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.service_type.label(class="form-label me-2") }}
+            {{ form.service_type(class="form-select d-inline w-50") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.experience.label(class="form-label me-2") }}
+            {{ form.experience(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.address.label(class="form-label me-2") }}
+            {{ form.address(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.pincode.label(class="form-label me-2") }}
+            {{ form.pincode(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.contact_number.label(class="form-label me-2") }}
+            {{ form.contact_number(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="text-center mt-2">
+            {{ form.submit(class="btn btn-success") }}
+        </div>
     </div>
 </form>
 <br>

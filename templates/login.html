@@ -5,26 +5,25 @@
 {% block content %}
 <h1 class="mt-0 m-3">Login Page</h1>
 <hr class="border"><br>
-<div class="card-body">
-    <div class="form-group">
-        <form method="POST" action="" class="form">
-            {{ form.hidden_tag() }}
-            <div class="col-md-12">
-                <label for="username">Username : </label>
-                {{ form.username }}<br><br>
-            </div>
-            <div class="col-md-12">
-                <label for="password">Password : </label>
-                {{ form.password }}<br><br>
-            </div>
-            <div class="text-center mt-2">
-                <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-        </form>
+<form method="POST">
+    <div class="row d-flex flex-column align-items-center">
+        {{ form.hidden_tag() }}
+        <div class="col-md-6">
+            {{ form.username.label(class="form-label me-2") }}
+            {{ form.username(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.password.label(class="form-label me-2") }}
+            {{ form.password(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="text-center mt-2">
+            {{ form.submit(class="btn btn-success") }}
+        </div>
     </div>
-    <br>
-    <h5>Don't have an account? Register now !</h5>
-    <a href="{{ url_for('register_customer') }}">Register As Customer</a><br>
-    <a href="{{ url_for('register_professional') }}">Register As Professional</a>
+</form>
+<br>
+<h5>Don't have an account? Register now !</h5>
+<a href="{{ url_for('register_customer') }}">Register As Customer</a><br>
+<a href="{{ url_for('register_professional') }}">Register As Professional</a>
 </div>
 {% endblock %}

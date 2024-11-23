@@ -7,8 +7,8 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), nullable=False, unique=True)
     password_hashed = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.Enum("admin", "customer",
-                     "professional"), nullable=False)
+    role = db.Column(
+        db.Enum("admin", "customer", "professional"), nullable=False)
     status = db.Column(
         db.Enum("pending", "verified", "blocked"), nullable=False)
     fullname = db.Column(db.String(64), nullable=False)
@@ -34,8 +34,8 @@ class Service(db.Model):
 class ServiceRequest(db.Model):
     __tablename__ = "service_requests"
     id = db.Column(db.Integer, primary_key=True)
-    service_id = db.Column(db.Integer, db.ForeignKey(
-        "services.id"), nullable=False)
+    service_id = db.Column(
+        db.Integer, db.ForeignKey("services.id"), nullable=False)
     customer_id = db.Column(
         db.Integer, db.ForeignKey("users.id"), nullable=False)
     professional_id = db.Column(
@@ -51,8 +51,8 @@ class ServiceRequest(db.Model):
 class Review(db.Model):
     __tablename__ = "reviews"
     id = db.Column(db.Integer, primary_key=True)
-    service_request_id = db.Column(db.Integer, db.ForeignKey(
-        "service_requests.id"), nullable=False)
+    service_request_id = db.Column(
+        db.Integer, db.ForeignKey("service_requests.id"), nullable=False)
     professional_id = db.Column(
         db.Integer, db.ForeignKey("users.id"), nullable=False)
     customer_id = db.Column(

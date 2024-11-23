@@ -11,9 +11,11 @@
             <h5 class="card-title">User Information</h5>
             <hr>
             <p><b>Full Name : </b> {{ current_user.fullname }}</p>
+            <p><b>Role : </b> {{ current_user.role }}</p>
             <p><b>Address : </b> {{ current_user.address }}</p>
             <p><b>Pincode : </b> {{ current_user.pincode }}</p>
             <p><b>Contact Number : </b> {{ current_user.contact_number }}</p>
+            <p><b>Profile Created On : </b> {{ current_user.created_at.strftime('%d-%m-%Y %H:%M') }}</p>
         </div>
     </div>
 </div>

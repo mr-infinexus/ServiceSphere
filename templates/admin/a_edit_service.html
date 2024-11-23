@@ -1,31 +1,33 @@
 {% extends "base.html" %}
 
-{% block title %}Edit Service{% endblock %}
+{% block title %}{{ title_name }} Service{% endblock %}
 
 {% block content %}
-<h2 class="m-3">Edit Service</h2>
+<h2 class="m-3">{{ title_name }} Service</h2>
 <hr class="border"><br>
-<form method="POST" class="row g-6">
-    {{ form.hidden_tag() }}
-    <div class="col-md-12">
-        {{ form.name.label(class="col-form-label") }}
-        {{ form.name() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        {{ form.price.label(class="col-form-label") }}
-        {{ form.price() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        {{ form.time_required.label(class="col-form-label") }}
-        {{ form.time_required() }}<br><br>
-    </div>
-    <div class="col-md-12 d-flex align-items-center justify-content-center">
-        {{ form.description.label(class="col-form-label") }}
-        {{ form.description() }}<br><br>
-    </div>
-    <div class="text-center mt-4">
-        {{ form.submit(class="btn btn-primary") }}
-        <a href="{{ url_for('admin_home') }}" class="btn btn-secondary">Cancel</a>
+<form method="POST">
+    <div class="row d-flex flex-column align-items-center">
+        {{ form.hidden_tag() }}
+        <div class="col-md-6">
+            {{ form.name.label(class="form-label me-2") }}
+            {{ form.name(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.price.label(class="form-label me-2") }}
+            {{ form.price(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.time_required.label(class="form-label me-2") }}
+            {{ form.time_required(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6 d-flex align-items-center justify-content-center">
+            {{ form.description.label(class="form-label me-2") }}
+            {{ form.description(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="text-center mt-4">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('admin_home') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </div>
 </form>
 {% endblock %}

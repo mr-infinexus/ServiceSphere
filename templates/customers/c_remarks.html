@@ -5,26 +5,28 @@
 {% block content %}
 <h2 class="m-3">Service Remarks</h2>
 <hr class="border"><br>
-<form action="{{ url_for('service_remarks', service_id=service_id) }}" method="post">
-    {{ form.hidden_tag() }}
-    <div class="col-md-12">
-        {{ form.service_id.label(class="col-form-label") }}
-        {{ form.service_id() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        {{ form.professional_id.label(class="col-form-label") }}
-        {{ form.professional_id() }}<br><br>
-    </div>
-    <div class="col-md-12">
-        {{ form.rating.label(class="col-form-label") }}
-        {{ form.rating() }}<br><br>
-    </div>
-    <div class="col-md-12 d-flex align-items-center justify-content-center">
-        {{ form.remarks.label(class="col-form-label") }}
-        {{ form.remarks(rows="3") }}<br><br>
-    </div>
-    <div class="text-center mt-4">
-        <button type="submit" class="btn btn-success">Submit</button>
+<form method="POST" action="{{ url_for('service_remarks', service_id=service_id) }}">
+    <div class="row d-flex flex-column align-items-center">
+        {{ form.hidden_tag() }}
+        <div class="col-md-6">
+            {{ form.service_id.label(class="form-label me-3") }}
+            {{ form.service_id(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.professional_id.label(class="form-label me-3") }}
+            {{ form.professional_id(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.rating.label(class="form-label me-3") }}
+            {{ form.rating(class="form-select d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6 d-flex align-items-center justify-content-center">
+            {{ form.remarks.label(class="form-label me-3") }}
+            {{ form.remarks(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="text-center mt-4">
+            {{ form.submit(class="btn btn-success") }}
+        </div>
     </div>
 </form>
 {% endblock %}

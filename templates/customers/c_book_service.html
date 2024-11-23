@@ -7,13 +7,15 @@
 <h2 class="m-3">Book a Service</h2>
 <hr class="border">
 <form method="POST" action="{{ url_for('book_service', service_id=service_id, professional_id=professional_id) }}">
-    {{ form.hidden_tag() }}
-    <div class="col-md-12">
-        {{ form.task.label }}
-        {{ form.task() }}<br><br>
-    </div>
-    <div class="text-center mt-4">
-        {{ form.submit(class_="btn btn-success") }}
+    <div class="row d-flex flex-column align-items-center">
+        {{ form.hidden_tag() }}
+        <div class="col-md-6">
+            {{ form.task.label(class="form-label me-2") }}
+            {{ form.task(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="text-center mt-4">
+            {{ form.submit(class="btn btn-success") }}
+        </div>
     </div>
 </form>
 {% endblock %}

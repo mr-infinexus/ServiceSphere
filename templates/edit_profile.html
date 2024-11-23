@@ -5,15 +5,30 @@
 {% block content %}
 {% include 'navbar.html' %}
 <h2 class="m-3">Edit Profile Details</h2>
-<form method="post" action="{{ url_for('edit_profile_details') }}" class="row g-6">
-    {{ form.hidden_tag() }}
-    <div class="col-md-12">{{ form.fullname.label }} {{ form.fullname() }}<br><br></div>
-    <div class="col-md-12">{{ form.address.label }} {{ form.address() }}<br><br></div>
-    <div class="col-md-12">{{ form.pincode.label }} {{ form.pincode() }}<br><br></div>
-    <div class="col-md-12">{{ form.contact_number.label }} {{ form.contact_number() }}<br><br></div>
-    <div class="text-center mt-2">
-        {{ form.submit(class="btn btn-primary mx-2 px-2") }}
-        <a href="{{ url_for('profile_details') }}" class="btn btn-secondary mx-2 px-3">Cancel</a>
+<hr class="border"><br>
+<form method="POST" action="{{ url_for('edit_profile_details') }}">
+    <div class="row d-flex flex-column align-items-center">
+        {{ form.hidden_tag() }}
+        <div class="col-md-6">
+            {{ form.fullname.label(class="form-label me-3") }}
+            {{ form.fullname(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.address.label(class="form-label me-3") }}
+            {{ form.address(class="form-control d-inline w-50") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.pincode.label(class="form-label me-3") }}
+            {{ form.pincode(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.contact_number.label(class="form-label me-3") }}
+            {{ form.contact_number(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="text-center mt-2">
+            {{ form.submit(class="btn btn-primary mx-2 px-2") }}
+            <a href="{{ url_for('profile_details') }}" class="btn btn-secondary mx-2 px-3">Cancel</a>
+        </div>
     </div>
 </form>
 {% endblock %}
