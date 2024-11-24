@@ -51,8 +51,9 @@
             <tr>
                 <th>ID</th>
                 <th>Username</th>
-                <th>Status</th>
+                <th>Service</th>
                 <th>Rating</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -63,8 +64,9 @@
                         }}</a>
                 </td>
                 <td>{{ user.username }}</td>
+                <td>{{ user.provider.name }}</td>
+                <td>{{ average_ratings_dict.get(user.id, 0) | round(1) }} out of 5</td>
                 <td>{{ user.status }}</td>
-                <td>{{ average_ratings_dict.get(user.id, 'N/A') }} out of 5</td>
                 <td>
                     {% if user.status == 'pending' %}
                     <form action="{{ url_for('approve_user', user_id=user.id) }}" method="POST" style="display:inline;"
@@ -101,7 +103,7 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <!-- <th>Customer</th> -->
+                <th>Customer</th>
                 <th>Assigned Professional</th>
                 <th>Time of Request</th>
                 <th>Time of Completion</th>
@@ -113,8 +115,8 @@
             {% for request in requests %}
             <tr>
                 <td>{{ request.id }}</td>
-                <!-- <td>{{ request.customer_name }}</td> -->
-                <td>{{ request.professional_name }}</td>
+                <td>{{ request.customer.fullname }}</td>
+                <td>{{ request.professional.fullname }}</td>
                 <td>{{ request.time_of_request.strftime('%d-%m-%Y %H:%M') }}</td>
                 <td>
                     {% if request.time_of_completion %}

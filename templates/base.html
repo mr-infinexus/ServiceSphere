@@ -31,18 +31,16 @@
 
     <script>
         setTimeout(function () {
-            // Loop through all alerts and remove them
             $('.alert').each(function () {
                 $(this).remove();
             });
         }, 3000);
         document.addEventListener('DOMContentLoaded', function () {
             var alerts = document.querySelectorAll('.alert');
-            var verticalOffset = 20; // Starting point from the top of the screen
-
+            var verticalOffset = 20;
             alerts.forEach(function (alert, index) {
-                alert.style.top = verticalOffset + 'px';  // Set the top position
-                verticalOffset += alert.offsetHeight + 10; // Increase the offset by the height of the alert + some space
+                alert.style.top = verticalOffset + 'px';
+                verticalOffset += alert.offsetHeight + 10;
             });
         });
     </script>

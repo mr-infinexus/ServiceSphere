@@ -39,8 +39,8 @@
             {% for item in service_history %}
             <tr>
                 <td>{{ item.id }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.professional_name }}</td>
+                <td>{{ item.service.name }}</td>
+                <td>{{ item.professional.fullname }}</td>
                 <td>{{ item.time_of_request.strftime('%d-%m-%Y %H:%M') }}</td>
                 <td>
                     {% if item.time_of_completion %}
@@ -57,7 +57,7 @@
                         onsubmit="return confirm('Are you sure you want to close this service?');">
                         <button type="submit" class="btn btn-warning">Close it?</button>
                     </form>
-                    {% elif item.service_status == 'rejected' %}
+                    {% elif item.service_status == 'rejected' and item.time_of_completion is none %}
                     <form action="{{ url_for('service_remarks', service_id=item.id) }}" method="post">
                         <button type="submit" class="btn btn-info">Add Remarks</button>
                     </form>

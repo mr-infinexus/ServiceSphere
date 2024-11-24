@@ -15,10 +15,6 @@
             <td>{{ user.username }}</td>
         </tr>
         <tr>
-            <th>Status</th>
-            <td>{{ user.status }}</td>
-        </tr>
-        <tr>
             <th>Role</th>
             <td>{{ user.role }}</td>
         </tr>
@@ -28,7 +24,7 @@
         </tr>
         <tr>
             <th>Service Offered</th>
-            <td>{{ service.name }}</td>
+            <td>{{ user.provider.name }}</td>
         </tr>
         <tr>
             <th>Address</th>
@@ -45,6 +41,10 @@
         <tr>
             <th>Profile Created On</th>
             <td>{{ user.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ user.status }}</td>
         </tr>
     </table>
 </div>

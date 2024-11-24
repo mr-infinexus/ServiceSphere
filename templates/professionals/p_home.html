@@ -21,21 +21,21 @@
     </thead>
     <tbody class="table-group-divider">
         {% if today_services %}
-        {% for service in today_services %}
+        {% for item in today_services %}
         <tr>
-            <td>{{ service.id }}</td>
-            <td>{{ service.customer_fullname }}</td>
-            <td>{{ service.customer_address }}</td>
-            <td>{{ service.customer_pincode }}</td>
-            <td>{{ service.customer_contact_number }}</td>
-            <td>{{ service.task }}</td>
+            <td>{{ item.id }}</td>
+            <td>{{ item.customer.fullname }}</td>
+            <td>{{ item.customer.address }}</td>
+            <td>{{ item.customer.pincode }}</td>
+            <td>{{ item.customer.contact_number }}</td>
+            <td>{{ item.task }}</td>
             <td>
-                <form action="{{ url_for('accept_request', request_id=service.id) }}" method="POST"
-                    style="display:inline;" onsubmit="return confirm('Are you sure you want to accept this service?');">
+                <form action="{{ url_for('accept_request', request_id=item.id) }}" method="POST" style="display:inline;"
+                    onsubmit="return confirm('Are you sure you want to accept this service?');">
                     <button type="submit" class="btn btn-primary mx-2 px-2">Accept</button>
                 </form>
-                <form action="{{ url_for('reject_request', request_id=service.id) }}" method="POST"
-                    style="display:inline;" onsubmit="return confirm('Are you sure you want to reject this service?');">
+                <form action="{{ url_for('reject_request', request_id=item.id) }}" method="POST" style="display:inline;"
+                    onsubmit="return confirm('Are you sure you want to reject this service?');">
                     <button type="submit" class="btn btn-danger mx-2 px-2">Reject</button>
                 </form>
             </td>
@@ -58,19 +58,21 @@
             <th>Address</th>
             <th>Pincode</th>
             <th>Contact No</th>
+            <th>Task</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody class="table-group-divider">
         {% if ongoing_services %}
-        {% for service in ongoing_services %}
+        {% for item in ongoing_services %}
         <tr>
-            <td>{{ service.id }}</td>
-            <td>{{ service.customer_fullname }}</td>
-            <td>{{ service.customer_address }}</td>
-            <td>{{ service.customer_pincode }}</td>
-            <td>{{ service.customer_contact_number }}</td>
-            <td>{{ service.service_status }}</td>
+            <td>{{ item.id }}</td>
+            <td>{{ item.customer.fullname }}</td>
+            <td>{{ item.customer.address }}</td>
+            <td>{{ item.customer.pincode }}</td>
+            <td>{{ item.customer.contact_number }}</td>
+            <td>{{ item.task }}</td>
+            <td>{{ item.service_status }}</td>
         </tr>
         {% endfor %}
         {% else %}
@@ -90,20 +92,28 @@
             <th>Address</th>
             <th>Pincode</th>
             <th>Contact No</th>
+            <th>Task</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody class="table-group-divider">
-        {% for service in closed_services %}
+        {% if closed_services %}
+        {% for item in closed_services %}
         <tr>
-            <td>{{ service.id }}</td>
-            <td>{{ service.customer_fullname }}</td>
-            <td>{{ service.customer_address }}</td>
-            <td>{{ service.customer_pincode }}</td>
-            <td>{{ service.customer_contact_number }}</td>
-            <td>{{ service.service_status }}</td>
+            <td>{{ item.id }}</td>
+            <td>{{ item.customer.fullname }}</td>
+            <td>{{ item.customer.address }}</td>
+            <td>{{ item.customer.pincode }}</td>
+            <td>{{ item.customer.contact_number }}</td>
+            <td>{{ item.task }}</td>
+            <td>{{ item.service_status }}</td>
         </tr>
         {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="7" class="text-center">No closed services found.</td>
+        </tr>
+        {% endif %}
     </tbody>
 </table>
 {% endblock %}

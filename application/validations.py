@@ -33,7 +33,8 @@ class ProfessionalForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(ProfessionalForm, self).__init__(*args, **kwargs)
-        self.service_type.choices = [("", "Choose an option")] + [(service.id, service.name) for service in Service.query.all()]
+        services = Service.query.order_by(Service.name).all()
+        self.service_type.choices = [("", "Choose an option")] + [(service.id, service.name) for service in services]
 
 
 class EditServiceForm(FlaskForm):

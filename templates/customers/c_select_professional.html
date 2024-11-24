@@ -22,11 +22,11 @@
         {% for professional in professionals %}
         <tr>
             <td>{{ professional.fullname }}</td>
-            <td>{{ service.name }}</td>
+            <td>{{ professional.provider.name }}</td>
             <td>{{ professional.address }}</td>
             <td>{{ professional.pincode }}</td>
             <td>{{ professional.contact_number }}</td>
-            <td>{{ average_ratings_dict.get(professional.id, 'N/A') }} out of 5</td>
+            <td>{{ average_ratings_dict.get(professional.id, 0) | round(1) }} out of 5</td>
             <td>{{ professional.experience or 'N/A' }} Years</td>
             <td>
                 <form
