@@ -28,15 +28,15 @@
                 <th>ID</th>
                 <th>Service Name</th>
                 <th>Professional Name</th>
-                <th>Date of Request</th>
-                <th>Date of Completion</th>
+                <th>Time of Request</th>
+                <th>Time of Completion</th>
                 <th>Task</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody class="table-group-divider">
-            {% for item in service_history_data %}
+            {% for item in service_history %}
             <tr>
                 <td>{{ item.id }}</td>
                 <td>{{ item.name }}</td>

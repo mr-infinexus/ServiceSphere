@@ -101,9 +101,10 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <!-- <th>Customer</th> -->
                 <th>Assigned Professional</th>
-                <th>Date of Request</th>
-                <th>Date of Completion</th>
+                <th>Time of Request</th>
+                <th>Time of Completion</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -112,6 +113,7 @@
             {% for request in requests %}
             <tr>
                 <td>{{ request.id }}</td>
+                <!-- <td>{{ request.customer_name }}</td> -->
                 <td>{{ request.professional_name }}</td>
                 <td>{{ request.time_of_request.strftime('%d-%m-%Y %H:%M') }}</td>
                 <td>

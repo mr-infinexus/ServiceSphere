@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 import application.init_db
 from application.models import User, Service, ServiceRequest, Review
-from application.validations import LoginForm, CustomerRegistrationForm, ProfessionalRegistrationForm, EditServiceForm, BookServiceForm, RemarksForm, EditProfileForm
+from application.validations import LoginForm, CustomerForm, ProfessionalForm, EditServiceForm, BookServiceForm, RemarksForm, EditProfileForm
 
 
 login_manager = LoginManager()
@@ -69,7 +69,7 @@ def login():
 
 @app.route("/register/customer", methods=["GET", "POST"])
 def register_customer():
-    form = CustomerRegistrationForm()
+    form = CustomerForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user:
@@ -90,7 +90,7 @@ def register_customer():
 
 @app.route("/register/professional", methods=["GET", "POST"])
 def register_professional():
-    form = ProfessionalRegistrationForm()
+    form = ProfessionalForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user:
@@ -144,8 +144,7 @@ def role_required(role):
         @wraps(func)
         def wrapper(*args, **kwargs):
             if current_user.role != role:
-                flash(f"You are not supposed to be there, {
-                      current_user.username}!", "danger")
+                flash(f"You are not supposed to be there, {current_user.username}!", "danger")
                 if current_user.role == "admin":
                     return redirect(url_for("admin_home"))
                 elif current_user.role == "customer":
@@ -169,8 +168,7 @@ def admin_home():
     professionals = User.query.filter_by(role="professional").all()
     services = Service.query.all()
     requests = ServiceRequest.query.all()
-    avg_ratings = Review.query.with_entities(Review.professional_id, func.avg(
-        Review.rating)).group_by(Review.professional_id).all()
+    avg_ratings = Review.query.with_entities(Review.professional_id, func.avg(Review.rating)).group_by(Review.professional_id).all()
     average_ratings_dict = dict()
     for result in avg_ratings:
         professional_id, avg_rating = result[0], round(result[1], 1)
@@ -226,8 +224,7 @@ def edit_service(service_id):
 def delete_service(service_id):
     service = Service.query.get_or_404(service_id)
     db.session.delete(service)
-    professionals = User.query.filter_by(
-        service_type=service_id, role="professional").all()
+    professionals = User.query.filter_by(service_type=service_id, role="professional").all()
     for professional in professionals:
         db.session.delete(professional)
     db.session.commit()
@@ -289,12 +286,10 @@ def delete_user(user_id):
 @login_required
 @role_required("admin")
 def admin_summary():
-    ratings_data = Review.query.group_by(Review.rating).with_entities(
-        Review.rating, db.func.count()).all()
+    ratings_data = Review.query.group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
     rating_counts = dict(ratings_data)
     service_requests = ServiceRequest.query.all()
-    service_counts = {"Requested": 0,
-                      "Accepted": 0, "Rejected": 0, "Closed": 0}
+    service_counts = {"Requested": 0,"Accepted": 0, "Rejected": 0, "Closed": 0}
     for request in service_requests:
         if request.service_status == "requested":
             service_counts["Requested"] += 1
@@ -318,28 +313,24 @@ def customer_home():
     Professional = aliased(User)
     service_history = db.session.query(ServiceRequest.id,
                                        Service.name,
-                                       Professional.username.label(
-                                           "professional_name"),
+                                       Professional.fullname.label("professional_name"),
                                        ServiceRequest.task,
                                        ServiceRequest.service_status,
                                        ServiceRequest.time_of_request,
                                        ServiceRequest.time_of_completion
                                        ).join(Service, ServiceRequest.service_id == Service.id) \
-        .join(Professional, ServiceRequest.professional_id == Professional.id) \
-        .order_by(ServiceRequest.time_of_request.desc())
-    service_history_data = service_history.all()
-    return render_template("customers/c_home.html", services=services, service_history_data=service_history_data)
+                                        .join(Professional, ServiceRequest.professional_id == Professional.id) \
+                                            .order_by(ServiceRequest.time_of_request.desc()).all()
+    return render_template("customers/c_home.html", services=services, service_history=service_history)
 
 
 @app.route("/customer/<int:service_id>/select_professional")
 @login_required
 @role_required("customer")
 def select_professional(service_id):
-    professionals = User.query.filter(
-        User.role == "professional", User.service_type == service_id, User.status == "verified").all()
+    professionals = User.query.filter(User.role == "professional", User.service_type == service_id, User.status == "verified").all()
     service = Service.query.get(service_id)
-    avg_ratings = Review.query.with_entities(Review.professional_id, func.avg(
-        Review.rating)).group_by(Review.professional_id).all()
+    avg_ratings = Review.query.with_entities(Review.professional_id, func.avg(Review.rating)).group_by(Review.professional_id).all()
     average_ratings_dict = dict()
     for result in avg_ratings:
         professional_id, avg_rating = result[0], round(result[1], 1)
@@ -404,12 +395,10 @@ def service_remarks(service_id):
 @login_required
 @role_required("customer")
 def customer_summary():
-    ratings_data = Review.query.group_by(Review.rating).with_entities(
-        Review.rating, db.func.count()).all()
+    ratings_data = Review.query.group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
     rating_counts = dict(ratings_data)
     service_requests = ServiceRequest.query.all()
-    service_counts = {"Requested": 0,
-                      "Accepted": 0, "Rejected": 0, "Closed": 0}
+    service_counts = {"Requested": 0, "Accepted": 0, "Rejected": 0, "Closed": 0}
     for request in service_requests:
         if request.service_status == "requested":
             service_counts["Requested"] += 1
@@ -435,8 +424,7 @@ def professional_home():
                                       User.fullname.label("customer_fullname"),
                                       User.address.label("customer_address"),
                                       User.pincode.label("customer_pincode"),
-                                      User.contact_number.label(
-                                          "customer_contact_number")
+                                      User.contact_number.label("customer_contact_number")
                                       ).join(User, User.id == ServiceRequest.customer_id).filter(
                                           and_(ServiceRequest.professional_id == current_user.id,
                                                ServiceRequest.service_status == "requested")).all()
