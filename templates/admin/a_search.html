@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Summary{% endblock %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<h2 class="m-3">Search</h2>
+<form method="POST">
+    <div class="d-flex align-items-center justify-content-center">
+        <label class="form-label me-2">Search by :</label>
+        <select class="form-select d-inline w-25 me-2" name="search_by" required>
+            <option value="">Search by</option>
+            <option value="service_request">Service Requests</option>
+            <option value="customer">Customers</option>
+            <option value="professional">Professionals</option>
+        </select>
+        <input class="form-control d-inline w-25" type="text" name="search_text" placeholder="Enter search text"
+            required>
+        <button type="submit" class="btn btn-dark mx-2 px-2">Search</button>
+    </div>
+</form>
+<hr class="border">
+
+{% if requests %}
+<table class="table table-bordered table-primary align-middle">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Assigned Professional</th>
+            <th>Time of Request</th>
+            <th>Time of Completion</th>
+            <th>Task</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for request in requests %}
+        <tr>
+            <td>{{ request[0].id }}</td>
+            <td>{{ request[0].customer.fullname }}</td>
+            <td>{{ request[0].professional.fullname }}</td>
+            <td>{{ request[0].time_of_request.strftime('%d-%m-%Y %H:%M') }}</td>
+            <td>
+                {% if request[0].time_of_completion %}
+                {{ request[0].time_of_completion.strftime('%d-%m-%Y %H:%M') }}
+                {% else %}
+                N/A
+                {% endif %}
+            </td>
+            <td>{{ request[0].task }}</td>
+            <td>{{ request[0].service_status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if customers %}
+<table class="table table-bordered table-primary align-middle">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Address</th>
+            <th>Pincode</th>
+            <th>Contact No</th>
+            <th>Profile Created On</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for user in customers %}
+        <tr>
+            <td>
+                <a href="{{ url_for('view_user_details', user_id=user.id) }}" class="btn btn-link btn-lg">{{ user.id }}</a>
+            </td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.fullname }}</td>
+            <td>{{ user.address }}</td>
+            <td>{{ user.pincode }}</td>
+            <td>{{ user.contact_number }}</td>
+            <td>{{ user.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+            <td>
+                {% if user.status == 'pending' or user.status == 'blocked'%}
+                <form action="{{ url_for('approve_user', user_id=user.id) }}" method="POST" style="display:inline;"
+                    onsubmit="return confirm('Are you sure you want to approve this user?');">
+                    <button type="submit" class="btn btn-success mx-2 px-2">Approve</button>
+                </form>
+                {% elif user.status != 'blocked' %}
+                <form action="{{ url_for('block_user', user_id=user.id) }}" method="POST" style="display:inline;"
+                    onsubmit="return confirm('Are you sure you want to block this user?');">
+                    <button type="submit" class="btn btn-warning mx-2 px-2">Block</button>
+                </form>
+                {% endif %}
+                <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" style="display:inline;"
+                    onsubmit="return confirm('Are you sure you want to delete this user?');">
+                    <button type="submit" class="btn btn-danger mx-2 px-2">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if professionals %}
+<table class="table table-bordered table-primary align-middle">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for user in professionals %}
+        <tr>
+            <td>
+                <a href="{{ url_for('view_user_details', user_id=user[0].id) }}" class="btn btn-link btn-lg">{{ user[0].id }}</a>
+            </td>
+            <td>{{ user[0].username }}</td>
+            <td>{{ user[0].fullname }}</td>
+            <td>{{ user[0].provider.name }}</td>
+            <td>{{ user[0].status }}</td>
+            <td>
+                {% if user[0].status == 'pending' or user[0].status == 'blocked'%}
+                <form action="{{ url_for('approve_user', user_id=user[0].id) }}" method="POST" style="display:inline;"
+                    onsubmit="return confirm('Are you sure you want to approve this user?');">
+                    <button type="submit" class="btn btn-success mx-2 px-2">Approve</button>
+                </form>
+                {% elif user[0].status != 'blocked' %}
+                <form action="{{ url_for('block_user', user_id=user[0].id) }}" method="POST" style="display:inline;"
+                    onsubmit="return confirm('Are you sure you want to block this user?');">
+                    <button type="submit" class="btn btn-warning mx-2 px-2">Block</button>
+                </form>
+                {% endif %}
+                <form action="{{ url_for('delete_user', user_id=user[0].id) }}" method="POST" style="display:inline;"
+                    onsubmit="return confirm('Are you sure you want to delete this user?');">
+                    <button type="submit" class="btn btn-danger mx-2 px-2">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% endblock %}
