@@ -4,12 +4,11 @@
 
 {% block content %}
 {% include 'navbar.html' %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <h2 class="m-3">Summary</h2>
 <hr class="border">
 <div class="row g-4 justify-content-center">
     <!-- Customer Ratings Chart -->
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card shadow-sm">
             <div class="card-header bg-success text-white text-center">
                 <h5>Overall Customer Ratings</h5>
@@ -19,9 +18,9 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Service Requests Summary Chart -->
-    <div class="col-md-6">
+    <div class="col-md-7">
         <div class="card shadow-sm">
             <div class="card-header bg-info text-white text-center">
                 <h5>Service Requests Summary</h5>
@@ -33,17 +32,17 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Data from Flask
-        const ratingCounts = {{ rating_counts | tojson
-    }};
+    const ratingCounts = {{ rating_counts | tojson }};
     const serviceCounts = {{ service_counts | tojson }};
 
     // Customer Ratings Chart (Pie)
     const ratingLabels = Object.keys(ratingCounts);
     const ratingData = Object.values(ratingCounts);
-    const ratingColors = ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"];
+    const ratingColors = ["#FF6384", "#FFCE56", "#4BC0C0", "#36A2EB", "#9966FF"];
 
     const ratingCtx = document.getElementById('ratingChart').getContext('2d');
     new Chart(ratingCtx, {
@@ -74,7 +73,7 @@
     // Service Requests Summary Chart (Bar)
     const serviceLabels = Object.keys(serviceCounts);
     const serviceData = Object.values(serviceCounts);
-    const serviceColors = ["#007BFF", "#FF5733", "#C70039", "#900C3F", "#581845"]; // Bar colors
+    const serviceColors = ["#008008", "#FF5733", "#C70039", "#007BFF"];
 
     const serviceCtx = document.getElementById('serviceChart').getContext('2d');
     new Chart(serviceCtx, {
@@ -85,7 +84,7 @@
                 label: 'Service Requests',
                 data: serviceData,
                 backgroundColor: serviceColors,
-                borderColor: "#333333",
+                borderColor: "#111111",
                 borderWidth: 1
             }]
         },

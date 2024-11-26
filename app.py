@@ -1,8 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from sqlalchemy import and_, or_
+from sqlalchemy import or_
+from sqlalchemy.orm import aliased
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -103,7 +104,8 @@ def register_professional():
                         contact_number=form.contact_number.data)
         db.session.add(new_user)
         db.session.commit()
-        flash("Registration successful! Please log in.", "success")
+        flash("Registration successful!", "success")
+        flash("Please wait for admin verification.", "info")
         return redirect(url_for("login"))
 
     return render_template("professionals/p_register.html", form=form)
@@ -226,8 +228,6 @@ def delete_service(service_id):
 @role_required("admin")
 def view_user_details(user_id):
     user = User.query.get_or_404(user_id)
-    if user.role != "professional":
-        return redirect(url_for("admin_home"))
     return render_template("admin/a_user_details.html", user=user)
 
 
@@ -268,6 +268,59 @@ def delete_user(user_id):
     db.session.commit()
     flash("User deleted successfully!", "success")
     return redirect(url_for("admin_home"))
+
+
+@app.route("/admin/search", methods=["GET", "POST"])
+@login_required
+@role_required("admin")
+def admin_search():
+    requests, customers, professionals = [], [], []
+    search_by = request.form.get("search_by")
+    search_text = request.form.get("search_text", "").strip()
+    if search_by == "service_request":
+        Customer = aliased(User)
+        Professional = aliased(User)
+        requests = db.session.query(ServiceRequest, Customer, Professional, Service) \
+            .join(Customer, Customer.id == ServiceRequest.customer_id) \
+            .join(Professional, Professional.id == ServiceRequest.professional_id) \
+            .join(Service, Service.id == ServiceRequest.service_id) \
+            .filter(
+                or_(ServiceRequest.service_status.ilike(f"%{search_text}%"),
+                    ServiceRequest.time_of_request.ilike(f"%{search_text}%"),
+                    ServiceRequest.time_of_completion.ilike(f"%{search_text}%"),
+                    ServiceRequest.task.ilike(f"%{search_text}%"),
+                    Customer.username.ilike(f"%{search_text}%"),
+                    Customer.fullname.ilike(f"%{search_text}%"),
+                    Professional.username.ilike(f"%{search_text}%"),
+                    Professional.fullname.ilike(f"%{search_text}%"),
+                    Service.name.ilike(f"%{search_text}%")
+                )).order_by(ServiceRequest.time_of_request.desc()).all()
+        if not requests:
+            flash("No Service Requests found", "danger")
+            return redirect(url_for("admin_search"))
+    elif search_by == "customer":
+        customers = User.query.filter(
+            User.role == "customer",
+            or_(
+                User.username.ilike(f"%{search_text}%"),
+                User.fullname.ilike(f"%{search_text}%")
+            )).all()
+        if not customers:
+            flash("No Customer found", "danger")
+            return redirect(url_for("admin_search")) 
+    elif search_by == "professional":
+        professionals = db.session.query(User, Service).join(User, User.service_type == Service.id).filter(
+                User.role == "professional",
+                or_(User.username.ilike(f"%{search_text}%"),
+                    User.fullname.ilike(f"%{search_text}%"),
+                    User.status.ilike(f"%{search_text}%"),
+                    User.experience.ilike(f"%{search_text}%"),
+                    Service.name.ilike(f"%{search_text}%")
+                )).all()
+        if not professionals:
+            flash("No Service Professionals found", "danger")
+            return redirect(url_for("admin_search"))
+    return render_template("admin/a_search.html", requests=requests, customers=customers, professionals=professionals)
 
 
 @app.route("/admin/summary")
@@ -321,6 +374,8 @@ def select_professional(service_id):
 @role_required("customer")
 def book_service(service_id, professional_id):
     form = BookServiceForm()
+    form.service_id.data = service_id
+    form.professional_id.data = professional_id
     if form.validate_on_submit():
         new_entry = ServiceRequest(service_id=service_id, professional_id=professional_id,
                                    customer_id=current_user.id, service_status="requested", task=form.task.data)
@@ -347,9 +402,7 @@ def close_service(service_id):
 @role_required("customer")
 def service_remarks(service_id):
     history_entry = ServiceRequest.query.get_or_404(service_id)
-    form = RemarksForm()
-    form.service_id.data = history_entry.service_id
-    form.professional_id.data = history_entry.professional_id
+    form = RemarksForm(obj=history_entry)
     if form.validate_on_submit():
         new_review = Review(
             service_request_id=history_entry.service_id,
@@ -364,6 +417,45 @@ def service_remarks(service_id):
         flash("Remarks submitted successfully!", "success")
         return redirect(url_for("customer_home"))
     return render_template("customers/c_remarks.html", form=form, service_id=service_id)
+
+
+@app.route("/customer/search", methods=["GET", "POST"])
+@login_required
+@role_required("customer")
+def customer_search():
+    requests, professionals, average_ratings_dict = [], [], {}
+    search_by = request.form.get("search_by")
+    search_text = request.form.get("search_text", "").strip()
+    if search_by == "service_request":
+        requests = db.session.query(ServiceRequest, User).join(User, User.id == ServiceRequest.professional_id).filter(
+            ServiceRequest.customer_id == current_user.id,
+            or_(ServiceRequest.service_status.ilike(f"%{search_text}%"),
+                ServiceRequest.time_of_request.ilike(f"%{search_text}%"),
+                ServiceRequest.time_of_completion.ilike(f"%{search_text}%"),
+                ServiceRequest.task.ilike(f"%{search_text}%"),
+                User.fullname.ilike(f"%{search_text}%")
+                )).order_by(ServiceRequest.time_of_request.desc()).all()
+        if not requests:
+            flash("No Results found", "danger")
+            return redirect(url_for("customer_search"))
+    elif search_by == "professionals":
+        professionals = db.session.query(User, Service).join(User, User.service_type == Service.id).filter(
+                User.role == "professional",
+                or_(User.fullname.ilike(f"%{search_text}%"),
+                    User.address.ilike(f"%{search_text}%"),
+                    User.pincode.ilike(f"%{search_text}%"),
+                    User.contact_number.ilike(f"%{search_text}%"),
+                    User.experience.ilike(f"%{search_text}%"),
+                    Service.name.ilike(f"%{search_text}%")
+                )).all()
+        if not professionals:
+            flash("No Service Professionals found", "danger")
+            return redirect(url_for("admin_search"))
+        avg_ratings = Review.query.join(ServiceRequest, Review.service_request_id == ServiceRequest.id
+                                        ).with_entities(Review.professional_id, db.func.avg(Review.rating)
+                                                        ).group_by(Review.professional_id).all()
+        average_ratings_dict = dict(avg_ratings)
+    return render_template("customers/c_search.html", requests=requests, professionals=professionals, average_ratings_dict=average_ratings_dict)
 
 
 @app.route("/customer/summary")
@@ -391,16 +483,16 @@ def customer_summary():
 @login_required
 @role_required("professional")
 def professional_home():
-    today_services = ServiceRequest.query.join(User, User.id == ServiceRequest.customer_id
-                                               ).filter(and_(ServiceRequest.professional_id == current_user.id,
-                                                             ServiceRequest.service_status == "requested")).all()
-    ongoing_services = ServiceRequest.query.join(User, User.id == ServiceRequest.customer_id
-                                                 ).filter(and_(ServiceRequest.professional_id == current_user.id,
-                                                               ServiceRequest.service_status == "accepted")).all()
-    closed_services = ServiceRequest.query.join(User, User.id == ServiceRequest.customer_id
-                                                ).filter(and_(or_(ServiceRequest.service_status == "rejected",
-                                                              ServiceRequest.service_status == "closed"),
-                                                              ServiceRequest.professional_id == current_user.id)).all()
+    today_services = ServiceRequest.query.join(User, User.id == ServiceRequest.customer_id).filter(
+        ServiceRequest.professional_id == current_user.id,
+        ServiceRequest.service_status == "requested").all()
+    ongoing_services = ServiceRequest.query.join(User, User.id == ServiceRequest.customer_id).filter(
+        ServiceRequest.professional_id == current_user.id,
+        ServiceRequest.service_status == "accepted").all()
+    closed_services = ServiceRequest.query.join(User, User.id == ServiceRequest.customer_id).filter(
+        ServiceRequest.professional_id == current_user.id,
+        or_(ServiceRequest.service_status == "rejected",
+            ServiceRequest.service_status == "closed")).all()
     return render_template("professionals/p_home.html", today_services=today_services, ongoing_services=ongoing_services, closed_services=closed_services)
 
 
@@ -432,11 +524,35 @@ def reject_request(request_id):
     return redirect(url_for("professional_home"))
 
 
+@app.route("/professional/search", methods=["GET", "POST"])
+@login_required
+@role_required("professional")
+def professional_search():
+    requests = []
+    search_by = request.form.get("search_by")
+    search_text = request.form.get("search_text", "").strip()
+    if search_by == "service_request":
+        requests = db.session.query(ServiceRequest, User).join(User, User.id == ServiceRequest.customer_id).filter(
+            ServiceRequest.professional_id == current_user.id,
+            or_(ServiceRequest.service_status.ilike(f"%{search_text}%"),
+                ServiceRequest.time_of_request.ilike(f"%{search_text}%"),
+                ServiceRequest.task.ilike(f"%{search_text}%"),
+                User.username.ilike(f"%{search_text}%"),
+                User.fullname.ilike(f"%{search_text}%"),
+                User.address.ilike(f"%{search_text}%"),
+                User.pincode.ilike(f"%{search_text}%")
+                )).order_by(ServiceRequest.time_of_request.desc()).all()
+        if not requests:
+            flash("No Results found", "danger")
+            return redirect(url_for("professional_search"))
+    return render_template("professionals/p_search.html", requests=requests)
+
+
 @app.route("/professional/summary")
 @login_required
 @role_required("professional")
 def professional_summary():
-    ratings_data = Review.query.group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
+    ratings_data = Review.query.filter_by(professional_id=current_user.id).group_by(Review.rating).with_entities(Review.rating, db.func.count()).all()
     rating_counts = dict(ratings_data)
     service_requests = ServiceRequest.query.filter_by(professional_id=current_user.id).all()
     service_counts = {"Requested": 0, "Accepted": 0, "Rejected": 0, "Closed": 0}

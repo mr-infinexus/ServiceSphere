@@ -4,7 +4,6 @@
 
 {% block content %}
 {% include 'navbar.html' %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <h2 class="m-3">Summary</h2>
 <hr class="border">
 <div class="row g-4 justify-content-center">
@@ -21,6 +20,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Data from Flask
@@ -29,7 +29,7 @@
     // Service Requests Summary Chart (Bar)
     const serviceLabels = Object.keys(serviceCounts);
     const serviceData = Object.values(serviceCounts);
-    const serviceColors = ["#007BFF", "#FF5733", "#C70039", "#900C3F", "#581845"]; // Bar colors
+    const serviceColors = ["#008008", "#FF5733", "#C70039", "#007BFF"];
 
     const serviceCtx = document.getElementById('serviceChart').getContext('2d');
     new Chart(serviceCtx, {

@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-primary-subtle text-primary-emphasis p-3 mb-2 rounded">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for(current_user.role + '_home') }}"><b>ServiceSphere</b></a>
+        <a class="navbar-brand" href="{{ url_for('home') }}"><b>ServiceSphere</b></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -11,7 +11,10 @@
                     <a class="nav-link active" aria-current="page" href="{{ url_for(current_user.role + '_home') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for(current_user.role + '_summary') }}">Summary</a>
+                    <a class="nav-link active" href="{{ url_for(current_user.role + '_search') }}">Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for(current_user.role + '_summary') }}">Summary</a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto mx-2 mb-lg-0">

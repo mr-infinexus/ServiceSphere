@@ -1,8 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&display=swap');
 
 :root {
-    --color-body: #e9edf4;
-    --color-heading: #e9edf4;
+    --color-body: #E9EDF4;
     --color-base: #2A4B8C;
     --color-base2: #141469;
     --color-brand: #80D2F2;
@@ -20,13 +19,13 @@ body {
 
 @media (min-width: 992px) {
     body {
-        font-size: 1.25rem;
+        font-size: 1.2rem;
     }
 }
 
 @media (max-width: 720px) {
     body {
-        font-size: 0.88rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -41,7 +40,7 @@ h3,
 h4,
 h5,
 h6 {
-    color: var(--color-heading);
+    color: var(--color-body);
     font-weight: 800;
 }
 
@@ -72,6 +71,10 @@ label {
     padding: 12px 28px;
     font-weight: 700;
     cursor: pointer;
+}
+
+.btn:hover {
+    transform: scale(1.05);
 }
 
 .alert {

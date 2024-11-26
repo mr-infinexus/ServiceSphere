@@ -3,7 +3,7 @@
 {% block title %}Professional Details{% endblock %}
 
 {% block content %}
-<h2 class="m-3">Professional Details</h2>
+<h2 class="m-3">User Details</h2>
 <div class="d-flex justify-content-center">
     <table class="table table-bordered table-primary w-auto align-middle">
         <tr>
@@ -15,9 +15,14 @@
             <td>{{ user.username }}</td>
         </tr>
         <tr>
+            <th>Full Name</th>
+            <td>{{ user.fullname }}</td>
+        </tr>
+        <tr>
             <th>Role</th>
             <td>{{ user.role }}</td>
         </tr>
+        {% if user.role == 'professional' %}
         <tr>
             <th>Experience (Years)</th>
             <td>{{ user.experience }}</td>
@@ -26,6 +31,7 @@
             <th>Service Offered</th>
             <td>{{ user.provider.name }}</td>
         </tr>
+        {% endif %}
         <tr>
             <th>Address</th>
             <td>{{ user.address }}</td>

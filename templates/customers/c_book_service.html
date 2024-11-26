@@ -10,6 +10,14 @@
     <div class="row d-flex flex-column align-items-center">
         {{ form.hidden_tag() }}
         <div class="col-md-6">
+            {{ form.service_id.label(class="form-label me-3") }}
+            {{ form.service_id(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6">
+            {{ form.professional_id.label(class="form-label me-3") }}
+            {{ form.professional_id(class="form-control d-inline w-25") }}<br><br>
+        </div>
+        <div class="col-md-6">
             {{ form.task.label(class="form-label me-2") }}
             {{ form.task(class="form-control d-inline w-50") }}<br><br>
         </div>
