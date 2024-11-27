@@ -169,9 +169,7 @@ def admin_home():
     professionals = User.query.filter_by(role="professional").all()
     services = Service.query.all()
     requests = ServiceRequest.query.all()
-    avg_ratings = Review.query.join(ServiceRequest, Review.service_request_id == ServiceRequest.id
-                                    ).with_entities(Review.professional_id, db.func.avg(Review.rating)
-                                                    ).group_by(Review.professional_id).all()
+    avg_ratings = db.session.query(Review.professional_id, db.func.avg(Review.rating)).group_by(Review.professional_id)
     average_ratings_dict = dict(avg_ratings)
     return render_template("admin/a_home.html", users=professionals, services=services, requests=requests, average_ratings_dict=average_ratings_dict)
 
@@ -241,7 +239,7 @@ def approve_user(user_id):
         db.session.commit()
         flash("User approved successfully!", "success")
     else:
-        flash("User approval failed.", "danger")
+        flash("User is already approved.", "warning")
     return redirect(url_for("admin_home"))
 
 
@@ -301,8 +299,7 @@ def admin_search():
     elif search_by == "customer":
         customers = User.query.filter(
             User.role == "customer",
-            or_(
-                User.username.ilike(f"%{search_text}%"),
+            or_(User.username.ilike(f"%{search_text}%"),
                 User.fullname.ilike(f"%{search_text}%")
             )).all()
         if not customers:
@@ -362,9 +359,7 @@ def customer_home():
 @role_required("customer")
 def select_professional(service_id):
     professionals = User.query.filter(User.role == "professional", User.service_type == service_id, User.status == "verified").all()
-    avg_ratings = Review.query.join(ServiceRequest, Review.service_request_id == ServiceRequest.id
-                                    ).with_entities(Review.professional_id, db.func.avg(Review.rating)
-                                                    ).group_by(Review.professional_id).all()
+    avg_ratings = db.session.query(Review.professional_id, db.func.avg(Review.rating)).group_by(Review.professional_id)
     average_ratings_dict = dict(avg_ratings)
     return render_template("customers/c_select_professional.html", professionals=professionals, average_ratings_dict=average_ratings_dict)
 
@@ -424,6 +419,7 @@ def service_remarks(service_id):
 @role_required("customer")
 def customer_search():
     requests, professionals, average_ratings_dict = [], [], {}
+    avg_ratings = db.session.query(Review.professional_id, db.func.avg(Review.rating)).group_by(Review.professional_id)
     search_by = request.form.get("search_by")
     search_text = request.form.get("search_text", "").strip()
     if search_by == "service_request":
@@ -441,6 +437,7 @@ def customer_search():
     elif search_by == "professionals":
         professionals = db.session.query(User, Service).join(User, User.service_type == Service.id).filter(
                 User.role == "professional",
+                User.status == "verified",
                 or_(User.fullname.ilike(f"%{search_text}%"),
                     User.address.ilike(f"%{search_text}%"),
                     User.pincode.ilike(f"%{search_text}%"),
@@ -450,10 +447,7 @@ def customer_search():
                 )).all()
         if not professionals:
             flash("No Service Professionals found", "danger")
-            return redirect(url_for("admin_search"))
-        avg_ratings = Review.query.join(ServiceRequest, Review.service_request_id == ServiceRequest.id
-                                        ).with_entities(Review.professional_id, db.func.avg(Review.rating)
-                                                        ).group_by(Review.professional_id).all()
+            return redirect(url_for("customer_search"))
         average_ratings_dict = dict(avg_ratings)
     return render_template("customers/c_search.html", requests=requests, professionals=professionals, average_ratings_dict=average_ratings_dict)
 

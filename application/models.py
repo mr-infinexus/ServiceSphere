@@ -17,6 +17,8 @@ class User(db.Model, UserMixin):
     experience = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     provider = db.relationship("Service", back_populates="provided_by", uselist=False)
+    customer_requests = db.relationship("ServiceRequest", back_populates="customer", foreign_keys="ServiceRequest.customer_id")
+    professional_requests = db.relationship("ServiceRequest", back_populates="professional", foreign_keys="ServiceRequest.professional_id")
 
 
 class Service(db.Model):
@@ -27,30 +29,30 @@ class Service(db.Model):
     time_required = db.Column(db.Integer, nullable=False)  # in minutes
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    provided_by = db.relationship("User", back_populates="provider", uselist=True, cascade='all, delete-orphan')
+    provided_by = db.relationship("User", back_populates="provider", cascade="all, delete-orphan")
 
 
 class ServiceRequest(db.Model):
     __tablename__ = "service_requests"
     id = db.Column(db.Integer, primary_key=True)
-    service_id = db.Column(db.Integer, db.ForeignKey("services.id"), nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    professional_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    service_id = db.Column(db.Integer, db.ForeignKey("services.id", ondelete="CASCADE"), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    professional_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     time_of_request = db.Column(db.DateTime, default=db.func.current_timestamp())
     time_of_completion = db.Column(db.DateTime)
     service_status = db.Column(db.Enum("requested", "accepted", "rejected", "closed"), nullable=False)
     task = db.Column(db.Text)
-    service = db.relationship("Service", backref="services", lazy=True, foreign_keys=[service_id])
-    customer = db.relationship("User", backref="customers", lazy=True, foreign_keys=[customer_id])
-    professional = db.relationship("User", backref="professionals", lazy=True, foreign_keys=[professional_id])
+    service = db.relationship("Service", backref="service_requests", lazy=True)
+    customer = db.relationship("User", back_populates="customer_requests", foreign_keys=[customer_id])
+    professional = db.relationship("User", back_populates="professional_requests", foreign_keys=[professional_id])
 
 
 class Review(db.Model):
     __tablename__ = "reviews"
     id = db.Column(db.Integer, primary_key=True)
-    service_request_id = db.Column(db.Integer, db.ForeignKey("service_requests.id"), nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    professional_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    service_request_id = db.Column(db.Integer, db.ForeignKey("service_requests.id", ondelete="CASCADE"), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    professional_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     remarks = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
