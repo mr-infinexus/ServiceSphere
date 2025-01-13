@@ -1,3 +1,4 @@
+from datetime import datetime, timezone, timedelta
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
@@ -406,7 +407,7 @@ def service_remarks(service_id):
             rating=form.rating.data,
             remarks=form.remarks.data
         )
-        history_entry.time_of_completion = db.func.current_timestamp()
+        history_entry.time_of_completion = datetime.now(timezone(timedelta(hours=5, minutes=30)))
         db.session.add(new_review)
         db.session.commit()
         flash("Remarks submitted successfully!", "success")

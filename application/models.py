@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime, timezone, timedelta
 from flask_login import UserMixin
 
 
@@ -15,7 +16,7 @@ class User(db.Model, UserMixin):
     contact_number = db.Column(db.Integer, nullable=False)
     service_type = db.Column(db.Integer, db.ForeignKey("services.id"), nullable=True)
     experience = db.Column(db.Integer, nullable=True)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone(timedelta(hours=5, minutes=30))))
     provider = db.relationship("Service", back_populates="provided_by", uselist=False)
     customer_requests = db.relationship("ServiceRequest", back_populates="customer", foreign_keys="ServiceRequest.customer_id")
     professional_requests = db.relationship("ServiceRequest", back_populates="professional", foreign_keys="ServiceRequest.professional_id")
@@ -28,7 +29,7 @@ class Service(db.Model):
     price = db.Column(db.Numeric(10, 2), nullable=False)
     time_required = db.Column(db.Integer, nullable=False)  # in minutes
     description = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone(timedelta(hours=5, minutes=30))))
     provided_by = db.relationship("User", back_populates="provider", cascade="all, delete-orphan")
 
 
@@ -38,7 +39,7 @@ class ServiceRequest(db.Model):
     service_id = db.Column(db.Integer, db.ForeignKey("services.id", ondelete="CASCADE"), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     professional_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    time_of_request = db.Column(db.DateTime, default=db.func.current_timestamp())
+    time_of_request = db.Column(db.DateTime, default=datetime.now(timezone(timedelta(hours=5, minutes=30))))
     time_of_completion = db.Column(db.DateTime)
     service_status = db.Column(db.Enum("requested", "accepted", "rejected", "closed"), nullable=False)
     task = db.Column(db.Text)
@@ -55,4 +56,4 @@ class Review(db.Model):
     professional_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     remarks = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone(timedelta(hours=5, minutes=30))))
