@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Professional Details{% endblock %}
+{% block title %}User Details{% endblock %}
 
 {% block content %}
 <h2 class="m-3">User Details</h2>
@@ -46,7 +46,7 @@
         </tr>
         <tr>
             <th>Profile Created On</th>
-            <td>{{ user.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+            <td>{{ user.created_at.strftime('%d-%m-%Y %I:%M %p') }}</td>
         </tr>
         <tr>
             <th>Status</th>

@@ -1,28 +1,33 @@
-<nav class="navbar navbar-expand-lg bg-primary-subtle text-primary-emphasis p-3 mb-2 rounded">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for('home') }}"><b>ServiceSphere</b></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+<nav class="navbar navbar-expand-lg bg-primary-subtle text-primary-emphasis px-2 py-3 mb-2 rounded">
+    <div class="container-fluid px-1">
+        <img src="{{ url_for('static', filename='img/ServiceSphere.png') }}"
+            style="width: 40px; height: 40px; margin-right: 4px;">
+        <a class="navbar-brand mx-0" href="{{ url_for('home') }}"><b>ServiceSphere</b></a>
+        <button class="navbar-toggler px-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav me-auto mx-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for(current_user.role + '_home') }}">Home</a>
+                <li class="nav-item mx-2">
+                    <a class="nav-link active fw-semibold" aria-current="page"
+                        href="{{ url_for(current_user.role + '_home') }}">Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ url_for(current_user.role + '_search') }}">Search</a>
+                <li class="nav-item mx-1">
+                    <a class="nav-link active fw-semibold"
+                        href="{{ url_for(current_user.role + '_search') }}">Search</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ url_for(current_user.role + '_summary') }}">Summary</a>
+                <li class="nav-item mx-2">
+                    <a class="nav-link active fw-semibold"
+                        href="{{ url_for(current_user.role + '_summary') }}">Summary</a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto mx-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="btn btn-info mx-2 px-2" href="{{ url_for('profile_details') }}">Profile</a>
+                    <a class="btn btn-info m-2 px-2" href="{{ url_for('profile_details') }}">Profile</a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn btn-outline-danger mx-2 px-2" href="{{ url_for('logout') }}">Logout</a>
+                    <a class="btn btn-outline-danger my-2 px-2" href="{{ url_for('logout') }}">Logout</a>
                 </li>
             </ul>
         </div>

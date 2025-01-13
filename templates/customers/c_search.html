@@ -22,88 +22,92 @@
 
 {% if requests %}
 <h3 class="m-3">Search Results</h3>
-<table class="table table-bordered table-primary align-middle">
-    <thead>
-        <tr>
-            <th>Service Name</th>
-            <th>Professional Name</th>
-            <th>Time of Request</th>
-            <th>Time of Completion</th>
-            <th>Task</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody class="table-group-divider">
-        {% for request in requests %}
-        <tr>
-            <td>{{ request[0].professional.provider.name }}</td>
-            <td>{{ request[0].professional.fullname }}</td>
-            <td>{{ request[0].time_of_request.strftime('%d-%m-%Y %H:%M') }}</td>
-            <td>
-                {% if request[0].time_of_completion %}
-                {{ request[0].time_of_completion.strftime('%d-%m-%Y %H:%M') }}
-                {% else %}
-                N/A
-                {% endif %}
-            </td>
-            <td>{{ request[0].task }}</td>
-            <td>{{ request[0].service_status }}</td>
-            <td>
-                {% if request[0].service_status != 'closed' and request[0].service_status != 'rejected' %}
-                <form action="{{ url_for('close_service', service_id=request[0].id) }}" method="post"
-                    onsubmit="return confirm('Are you sure you want to close this service?');">
-                    <button type="submit" class="btn btn-warning mx-2 px-2">Close it?</button>
-                </form>
-                {% elif request[0].service_status == 'rejected' and request[0].time_of_completion is none %}
-                <form action="{{ url_for('service_remarks', service_id=request[0].id) }}" method="post">
-                    <button type="submit" class="btn btn-info">Add Remarks</button>
-                </form>
-                {% else %}
-                N/A
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-bordered table-primary">
+        <thead class="align-middle">
+            <tr>
+                <th>Service Name</th>
+                <th>Professional Name</th>
+                <th>Time of Request</th>
+                <th>Time of Completion</th>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider align-middle">
+            {% for request in requests %}
+            <tr>
+                <td>{{ request[0].professional.provider.name }}</td>
+                <td>{{ request[0].professional.fullname }}</td>
+                <td>{{ request[0].time_of_request.strftime('%d-%m-%Y %I:%M %p') }}</td>
+                <td>
+                    {% if request[0].time_of_completion %}
+                    {{ request[0].time_of_completion.strftime('%d-%m-%Y %I:%M %p') }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                </td>
+                <td>{{ request[0].task }}</td>
+                <td>{{ request[0].service_status }}</td>
+                <td>
+                    {% if request[0].service_status != 'closed' and request[0].service_status != 'rejected' %}
+                    <form action="{{ url_for('close_service', service_id=request[0].id) }}" method="post"
+                        onsubmit="return confirm('Are you sure you want to close this service?');">
+                        <button type="submit" class="btn btn-warning mx-2 px-2">Close it?</button>
+                    </form>
+                    {% elif request[0].service_status == 'rejected' and request[0].time_of_completion is none %}
+                    <form action="{{ url_for('service_remarks', service_id=request[0].id) }}" method="post">
+                        <button type="submit" class="btn btn-info">Add Remarks</button>
+                    </form>
+                    {% else %}
+                    N/A
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endif %}
 
 {% if professionals %}
-<table class="table table-bordered table-primary align-middle">
-    <thead>
-        <tr>
-            <th>Fullname</th>
-            <th>Service Name</th>
-            <th>Address</th>
-            <th>Pincode</th>
-            <th>Contact No</th>
-            <th>Rating</th>
-            <th>Experience</th>
-            <th>Book</th>
-        </tr>
-    </thead>
-    <tbody class="table-group-divider">
-        {% for professional in professionals %}
-        <tr>
-            <td>{{ professional[0].fullname }}</td>
-            <td>{{ professional[0].provider.name }}</td>
-            <td>{{ professional[0].address }}</td>
-            <td>{{ professional[0].pincode }}</td>
-            <td>{{ professional[0].contact_number }}</td>
-            <td>{{ average_ratings_dict.get(professional[0].id, 0) | round(1) }} out of 5</td>
-            <td>{{ professional[0].experience or 'N/A' }} Years</td>
-            <td>
-                <form
-                    action="{{ url_for('book_service', service_id=professional[0].service_type, professional_id=professional[0].id) }}"
-                    method="post" onsubmit="return confirm('Are you sure you want to book this service?');">
-                    <button type="submit" class="btn btn-success mx-2 px-2">Book</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-bordered table-primary">
+        <thead class="align-middle">
+            <tr>
+                <th>Fullname</th>
+                <th>Service Name</th>
+                <th>Address</th>
+                <th>Pincode</th>
+                <th>Contact No</th>
+                <th>Rating</th>
+                <th>Experience</th>
+                <th>Book</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider align-middle">
+            {% for professional in professionals %}
+            <tr>
+                <td>{{ professional[0].fullname }}</td>
+                <td>{{ professional[0].provider.name }}</td>
+                <td>{{ professional[0].address }}</td>
+                <td>{{ professional[0].pincode }}</td>
+                <td>{{ professional[0].contact_number }}</td>
+                <td>{{ average_ratings_dict.get(professional[0].id, 0) | round(1) }} out of 5</td>
+                <td>{{ professional[0].experience or 'N/A' }} Years</td>
+                <td>
+                    <form
+                        action="{{ url_for('book_service', service_id=professional[0].service_type, professional_id=professional[0].id) }}"
+                        method="post" onsubmit="return confirm('Are you sure you want to book this service?');">
+                        <button type="submit" class="btn btn-success mx-2 px-2">Book</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endif %}
 
 {% endblock %}
